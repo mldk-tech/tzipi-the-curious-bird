@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ציפי הציפור הסקרנית - הסיפור המלא</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@300;400;700;800&family=Varela+Round&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Varela Round', 'Assistant', sans-serif;
+            background: #e0f2fe;
+            overflow-x: hidden;
+            user-select: none;
+        }
+        
+        /* Comic Styles */
+        .comic-panel {
+            background: white;
+            border: 6px solid #1e293b;
+            box-shadow: 12px 12px 0px rgba(30, 41, 59, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .comic-bubble {
+            position: relative;
+            background: #ffffff;
+            border: 3px solid #000;
+            border-radius: 25px;
+            padding: 20px;
+            box-shadow: 4px 4px 0px rgba(0,0,0,1);
+            max-width: 320px;
+            opacity: 0;
+            transform: scale(0.8) translateY(20px);
+            transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 50;
+        }
+        .comic-bubble.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+        }
+        .comic-bubble::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            right: 40px;
+            border-width: 15px 15px 0;
+            border-style: solid;
+            border-color: #000 transparent transparent;
+        }
+        .comic-bubble::before {
+            content: '';
+            position: absolute;
+            bottom: -11px;
+            right: 43px;
+            border-width: 12px 12px 0;
+            border-style: solid;
+            border-color: #fff transparent transparent;
+            z-index: 1;
+        }
+
+        /* Animations */
+        .float-animation { animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-15px) rotate(1deg); }
+        }
+
+        .wing-flap { animation: flap 0.3s ease-in-out infinite alternate; transform-origin: top left; }
+        @keyframes flap {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(-30deg); }
+        }
+
+        .fade-in-up { animation: fadeInUp 0.8s ease-out forwards; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .sparkle { animation: sparkle 1.5s infinite; }
+        @keyframes sparkle {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .leaf-fall { animation: falling 3s linear infinite; }
+        @keyframes falling {
+            0% { transform: translateY(-20px) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(200px) rotate(360deg); opacity: 0; }
+        }
+
+        .breathe { animation: breathe 4s ease-in-out infinite; }
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+    </style>
+</head>
+<body class="bg-sky-100 min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-sm sticky top-0 z-50 border-b-4 border-slate-800 p-4">
+        <div class="max-w-5xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-yellow-400 rounded-full border-2 border-black flex items-center justify-center font-bold text-xl">צ</div>
+                <h1 class="text-2xl md:text-3xl font-black text-slate-800 tracking-tight">ציפי הציפור הסקרנית</h1>
+            </div>
+            <div class="text-sm md:text-base font-bold text-slate-600 bg-slate-100 px-4 py-1 rounded-full border border-slate-300">
+                פרק <span id="current-chapter">1</span> מתוך <span id="total-chapters">6</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center p-4 md:p-8">
+        <div class="w-full max-w-5xl comic-panel rounded-3xl overflow-hidden relative min-h-[600px] flex flex-col md:flex-row">
+            
+            <!-- Dynamic Background -->
+            <div id="scene-bg" class="absolute inset-0 transition-all duration-1000 bg-gradient-to-b from-sky-300 to-emerald-100 z-0"></div>
+
+            <!-- Left Side: Visuals -->
+            <div class="relative w-full md:w-3/5 h-[350px] md:h-auto z-10 overflow-hidden flex items-center justify-center p-6">
+                
+                <!-- Celestial Body (Sun/Moon) -->
+                <div id="celestial-body" class="absolute top-8 left-8 transition-all duration-1000 transform hover:scale-110 cursor-pointer">
+                    <!-- SVG Injected via JS -->
+                </div>
+
+                <!-- Scene Assets Container (Clouds, Leaves, Stars) -->
+                <div id="assets-container" class="absolute inset-0 pointer-events-none"></div>
+
+                <!-- Main Character Group -->
+                <div class="relative w-64 h-64 flex items-center justify-center">
+                    
+                    <!-- The House (Specific Scene) -->
+                    <div id="house-container" class="absolute bottom-[-40px] transition-all duration-700 opacity-0 scale-90">
+                        <!-- Shovach SVG -->
+                        <svg width="220" height="240" viewBox="0 0 220 240">
+                            <!-- Roof -->
+                            <path d="M10 80 L110 10 L210 80" fill="#15803d" stroke="#000" stroke-width="4"/>
+                            <path d="M20 80 L110 18 L200 80" fill="#22c55e" stroke="none"/>
+                            <!-- Base -->
+                            <rect x="30" y="80" width="160" height="140" fill="#1e3a8a" stroke="#000" stroke-width="4"/>
+                            <rect x="40" y="90" width="140" height="120" fill="#3b82f6" stroke="none"/>
+                            <!-- Door -->
+                            <circle cx="110" cy="140" r="35" fill="#1e293b" stroke="#000" stroke-width="3"/>
+                            <!-- Perch -->
+                            <rect x="90" y="180" width="40" height="10" fill="#78350f" stroke="#000" stroke-width="2"/>
+                            <!-- Sparkly Stones -->
+                            <circle cx="50" cy="100" r="5" fill="#facc15" class="sparkle" style="animation-delay: 0s"/>
+                            <circle cx="170" cy="110" r="6" fill="#facc15" class="sparkle" style="animation-delay: 0.5s"/>
+                            <circle cx="60" cy="190" r="4" fill="#facc15" class="sparkle" style="animation-delay: 1s"/>
+                            <circle cx="160" cy="180" r="5" fill="#facc15" class="sparkle" style="animation-delay: 1.5s"/>
+                        </svg>
+                    </div>
+
+                    <!-- Tzipi -->
+                    <div id="tzipi" class="float-animation relative z-20 transition-all duration-700">
+                        <svg width="140" height="140" viewBox="0 0 100 100">
+                            <!-- Body -->
+                            <path d="M20 60 Q10 40 40 30 Q70 20 85 45 Q95 65 75 80 Q55 95 20 60" fill="#fbbf24" stroke="#000" stroke-width="2.5"/>
+                            <!-- Wing -->
+                            <path class="wing-flap" d="M35 55 Q25 40 55 45 Q70 50 60 70" fill="#f59e0b" stroke="#000" stroke-width="2"/>
+                            <!-- Eye -->
+                            <g class="eye-group">
+                                <circle cx="72" cy="42" r="6" fill="white" stroke="#000" stroke-width="1.5"/>
+                                <circle cx="74" cy="42" r="2.5" fill="black"/>
+                            </g>
+                            <!-- Beak -->
+                            <path d="M82 45 L95 40 L85 52 Z" fill="#ea580c" stroke="#000" stroke-width="1.5"/>
+                            <!-- Legs -->
+                            <path d="M45 80 L45 92 M55 75 L60 90" stroke="#000" stroke-width="2" fill="none"/>
+                        </svg>
+                    </div>
+
+                    <!-- Friends Container -->
+                    <div id="friends-container" class="absolute bottom-0 right-[-60px] transition-all duration-700 opacity-0 translate-x-10">
+                        <!-- Dynamic Friend SVG -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Text & Story -->
+            <div class="relative w-full md:w-2/5 bg-white/80 backdrop-blur border-t-4 md:border-t-0 md:border-r-4 border-slate-800 p-6 flex flex-col justify-between z-20">
+                
+                <div class="flex-grow flex flex-col justify-center space-y-6">
+                    <!-- Speech Bubble -->
+                    <div id="bubble" class="comic-bubble active mx-auto md:mx-0">
+                        <p id="bubble-text" class="text-xl font-bold text-slate-800 leading-tight">
+                            <!-- Injected Text -->
+                        </p>
+                    </div>
+
+                    <!-- Narrator Box -->
+                    <div id="narrator-box" class="bg-yellow-50 border-2 border-yellow-400 p-4 rounded-xl fade-in-up">
+                        <h2 id="chapter-title" class="text-lg font-black text-yellow-800 mb-2 uppercase tracking-wide"></h2>
+                        <p id="narrator-text" class="text-slate-700 leading-relaxed"></p>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="mt-8 flex items-center justify-between gap-4">
+                    <button id="prev-btn" class="flex-1 py-3 rounded-xl border-2 border-slate-800 font-bold text-slate-700 hover:bg-slate-100 transition disabled:opacity-30 disabled:hover:bg-transparent">
+                        חזור
+                    </button>
+                    <button id="next-btn" class="flex-[2] py-3 rounded-xl bg-sky-500 border-2 border-slate-800 text-white font-bold shadow-[4px_4px_0px_rgba(30,41,59,1)] hover:translate-y-[2px] hover:shadow-[2px_2px_0px_rgba(30,41,59,1)] transition active:translate-y-[4px] active:shadow-none">
+                        המשך
+                    </button>
+                </div>
+
+                <!-- Progress Dots -->
+                <div class="flex justify-center gap-2 mt-4" id="indicators"></div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Story Data Configuration
+        const storyData = [
+            {
+                id: 1,
+                title: "ההתחלה",
+                bubble: "שלום! אני ציפי. העיניים שלי סקרניות ואמא אומרת: 'תקשיבי ללב שלך'.",
+                narrator: "ציפי היא ציפור קטנה שחוקרת את העולם. היא לומדת שאפשר לבחור במה שעושה לה נעים בלב.",
+                bgGradient: "from-sky-300 to-green-200",
+                tzipiAction: "scale-100",
+                assets: [],
+                isNight: false,
+                friend: null
+            },
+            {
+                id: 2,
+                title: "בחירות מתוקות",
+                bubble: "מממ... תותים אדומים! אני בוחרת לאכול תות ולשיר שיר שמח.",
+                narrator: "ציפי בוחרת מה לאכול ואיזה שירים לשיר. הבחירות הקטנות עושות אותה שמחה.",
+                bgGradient: "from-rose-200 to-yellow-100",
+                tzipiAction: "translate-y-2",
+                assets: ["🍓", "🍓", "🎵"],
+                isNight: false,
+                friend: null
+            },
+            {
+                id: 3,
+                title: "חברים בדרך",
+                bubble: "היי יונה! היא אוהבת שקט. והדרור? הוא אוהב לקפוץ! איזה כיף שכולם שונים.",
+                narrator: "בדרך ציפי פוגשת חברים: דרור קופצני, יונה שקטה, סנונית מהירה ואנפה סבלנית. לכל אחד אופי משלו.",
+                bgGradient: "from-blue-200 to-indigo-100",
+                tzipiAction: "translate-x-[-20px]",
+                assets: ["🌿"],
+                isNight: false,
+                friend: "dove" // Show dove SVG
+            },
+            {
+                id: 4,
+                title: "רגע של פחד",
+                bubble: "*בום!* אמא'לה! מה זה הרעש הזה? אה, רק עלה... לנשום עמוק. אני אמיצה.",
+                narrator: "רעש של עלה נופל מבהיל את ציפי. היא עוצרת, נושמת עמוק, ומרגיעה את עצמה עם מילים מחזקות.",
+                bgGradient: "from-gray-300 to-slate-200",
+                tzipiAction: "breathe scale-90", // Apply breathe class
+                assets: ["🍂", "💨"],
+                isNight: false,
+                friend: null
+            },
+            {
+                id: 5,
+                title: "אוצרות קטנים",
+                bubble: "וואו! תראו את טיפת המים הזו. היא נוצצת כמו יהלום אמיתי.",
+                narrator: "ציפי מגלה שיופי מסתתר בדברים הקטנים. טיפת מים פשוטה על אבן הופכת לאוצר מנצנץ.",
+                bgGradient: "from-cyan-200 to-white",
+                tzipiAction: "rotate-6",
+                assets: ["💧", "💎", "✨"],
+                isNight: false,
+                friend: null
+            },
+            {
+                id: 6,
+                title: "הבית המיוחד",
+                bubble: "תודה שושן! השובך הכחול-ירוק הזה הוא המקום הכי בטוח בשבילי.",
+                narrator: "בסוף היום, ציפי נכנסת לשובך המיוחד ששושן בנה: צבוע בכחול וירוק ומקושט באבנים נוצצות. לילה טוב!",
+                bgGradient: "from-blue-900 via-indigo-900 to-slate-900",
+                tzipiAction: "translate-y-[-40px] scale-75 opacity-0", // Tzipi goes inside
+                assets: ["⭐", "🌙"],
+                isNight: true,
+                friend: null,
+                showHouse: true
+            }
+        ];
+
+        // State
+        let currentIndex = 0;
+
+        // Elements
+        const els = {
+            bubble: document.getElementById('bubble'),
+            bubbleText: document.getElementById('bubble-text'),
+            chapterTitle: document.getElementById('chapter-title'),
+            narratorText: document.getElementById('narrator-text'),
+            sceneBg: document.getElementById('scene-bg'),
+            tzipi: document.getElementById('tzipi'),
+            house: document.getElementById('house-container'),
+            friends: document.getElementById('friends-container'),
+            assets: document.getElementById('assets-container'),
+            celestial: document.getElementById('celestial-body'),
+            currentChapter: document.getElementById('current-chapter'),
+            totalChapters: document.getElementById('total-chapters'),
+            prevBtn: document.getElementById('prev-btn'),
+            nextBtn: document.getElementById('next-btn'),
+            indicators: document.getElementById('indicators')
+        };
+
+        // SVGs
+        const sunSVG = `<svg class="w-20 h-20 text-yellow-400 drop-shadow-md animate-spin-slow" fill="currentColor" viewBox="0 0 20 20"><circle cx="10" cy="10" r="5" /><path d="M10 2V4M10 16V18M18 10H16M4 10H2M15.66 4.34L14.24 5.76M5.76 14.24L4.34 15.66M15.66 15.66L14.24 14.24M5.76 5.76L4.34 4.34" stroke="currentColor" stroke-width="2" /></svg>`;
+        const moonSVG = `<svg class="w-16 h-16 text-slate-200 drop-shadow-[0_0_10px_rgba(255,255,255,0.6)]" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>`;
+        
+        const doveSVG = `
+            <svg width="100" height="100" viewBox="0 0 100 100">
+                <path d="M20 60 Q30 30 60 40 Q80 45 75 60 Q60 70 20 60" fill="#e2e8f0" stroke="#475569" stroke-width="2"/>
+                <circle cx="65" cy="45" r="2" fill="black"/>
+                <path d="M75 48 L85 50 L75 55" fill="#f59e0b"/>
+                <path d="M30 60 Q40 50 50 60" fill="none" stroke="#475569" stroke-width="2"/>
+            </svg>`;
+
+        // Init
+        els.totalChapters.textContent = storyData.length;
+        
+        storyData.forEach((_, i) => {
+            const dot = document.createElement('div');
+            dot.className = `w-3 h-3 rounded-full transition-all duration-300 ${i === 0 ? 'bg-sky-500 w-6' : 'bg-slate-300'}`;
+            els.indicators.appendChild(dot);
+        });
+
+        // Update Function
+        function updateScene() {
+            const data = storyData[currentIndex];
+            
+            // 1. Reset/Hide for transition
+            els.bubble.classList.remove('active');
+            els.friends.style.opacity = '0';
+            els.house.style.opacity = '0';
+            els.assets.innerHTML = '';
+            
+            // 2. Logic Delay
+            setTimeout(() => {
+                // Text Updates
+                els.bubbleText.textContent = data.bubble;
+                els.chapterTitle.textContent = data.title;
+                els.narratorText.textContent = data.narrator;
+                els.currentChapter.textContent = currentIndex + 1;
+
+                // Background
+                els.sceneBg.className = `absolute inset-0 transition-all duration-1000 bg-gradient-to-b ${data.bgGradient} z-0`;
+                
+                // Day/Night Cycle
+                if(data.isNight) {
+                    els.celestial.innerHTML = moonSVG;
+                    document.body.style.backgroundColor = '#0f172a';
+                    els.bubbleText.classList.remove('text-slate-800');
+                    els.bubbleText.classList.add('text-indigo-900');
+                } else {
+                    els.celestial.innerHTML = sunSVG;
+                    document.body.style.backgroundColor = '#e0f2fe';
+                    els.bubbleText.classList.add('text-slate-800');
+                    els.bubbleText.classList.remove('text-indigo-900');
+                }
+
+                // Tzipi Animation
+                els.tzipi.className = `float-animation relative z-20 transition-all duration-700 ${data.tzipiAction}`;
+
+                // Specific Scenes
+                if (data.showHouse) {
+                    els.house.style.opacity = '1';
+                    els.house.style.transform = 'scale(1)';
+                    // If house is shown, Tzipi is "inside" (hidden by tzipiAction class) or small
+                } else {
+                    els.house.style.transform = 'scale(0.9)';
+                }
+
+                if (data.friend === 'dove') {
+                    els.friends.innerHTML = doveSVG;
+                    els.friends.style.opacity = '1';
+                    els.friends.style.transform = 'translateX(0)';
+                } else {
+                    els.friends.style.transform = 'translateX(50px)';
+                }
+
+                // Generate Floating Assets
+                data.assets.forEach((item, i) => {
+                    const el = document.createElement('div');
+                    el.textContent = item;
+                    el.className = 'absolute text-4xl animate-bounce';
+                    // Random positions based on index
+                    el.style.left = `${20 + (i * 30)}%`;
+                    el.style.top = `${10 + (i * 15)}%`;
+                    el.style.animationDelay = `${i * 0.5}s`;
+                    if(item === '🍂') el.className = 'absolute text-4xl leaf-fall';
+                    els.assets.appendChild(el);
+                });
+
+                // 3. Show bubble & indicators
+                els.bubble.classList.add('active');
+                
+                // Update dots
+                Array.from(els.indicators.children).forEach((dot, i) => {
+                    dot.className = `w-3 h-3 rounded-full transition-all duration-300 ${i === currentIndex ? 'bg-sky-500 w-8' : 'bg-slate-300'}`;
+                });
+
+                // Button states
+                els.prevBtn.disabled = currentIndex === 0;
+                els.nextBtn.textContent = currentIndex === storyData.length - 1 ? 'התחל מחדש' : 'המשך';
+
+            }, 400);
+        }
+
+        // Listeners
+        els.nextBtn.addEventListener('click', () => {
+            if(currentIndex < storyData.length - 1) currentIndex++;
+            else currentIndex = 0;
+            updateScene();
+        });
+
+        els.prevBtn.addEventListener('click', () => {
+            if(currentIndex > 0) {
+                currentIndex--;
+                updateScene();
+            }
+        });
+
+        // Start
+        updateScene();
+
+    </script>
+</body>
+</html>
