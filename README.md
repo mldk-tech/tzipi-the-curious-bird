@@ -13,3 +13,7 @@ The story follows the journey of **Tzipi**, a small bird with large, curious eye
 5. **Home and Security:** The story concludes with Tzipi returning to the special birdhouse built for her by Shoshan – a colorful home in shades of blue and green, decorated with sparkling stones. There, she feels safe, loved, and wise.
 
 **Core Message:** The story encourages children to listen to their inner voice, accept others, and find security and joy both within themselves and in their immediate surroundings.
+
+[The Story](https://docs.google.com/document/d/1lZDTjtI1TCu_eEIbVfHUW8wpYLJb5ONszlYEGZDTHK4/edit?usp=sharing)
+
+[The WebSite](https://mldk-tech.github.io/tzipi-the-curious-bird/)
